@@ -1,3 +1,4 @@
+// src/StopwatchApp.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, RotateCcw, Play, Pause, Flag, Clock, Palette } from 'lucide-react';
 
