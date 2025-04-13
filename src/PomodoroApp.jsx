@@ -1,88 +1,17 @@
 // src/PomodoroApp.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Clock, Palette, Play, Pause, RotateCcw, Settings } from 'lucide-react';
-
-// Theme definitions (same as StopwatchApp)
-const themes = [
-  {
-    id: 'sky',
-    name: 'Sky Blue',
-    primary: 'text-sky-500',
-    secondary: 'text-indigo-500',
-    bgColor: 'bg-slate-50',
-    cardBg: 'bg-white',
-    buttonPrimary: 'bg-sky-500 hover:bg-sky-400',
-    buttonSecondary: 'bg-indigo-500 hover:bg-indigo-400',
-    buttonNeutral: 'bg-slate-300 hover:bg-slate-200',
-    textColor: 'text-gray-800',
-    accentLight: 'bg-sky-50',
-    isDark: false
-  },
-  {
-    id: 'violet',
-    name: 'Violet Dream',
-    primary: 'text-violet-500',
-    secondary: 'text-fuchsia-500',
-    bgColor: 'bg-gray-900',
-    cardBg: 'bg-gray-800',
-    buttonPrimary: 'bg-violet-600 hover:bg-violet-500',
-    buttonSecondary: 'bg-fuchsia-600 hover:bg-fuchsia-500',
-    buttonNeutral: 'bg-gray-700 hover:bg-gray-600',
-    textColor: 'text-gray-100',
-    accentLight: 'bg-violet-900 bg-opacity-30',
-    isDark: true
-  },
-  {
-    id: 'emerald',
-    name: 'Emerald Forest',
-    primary: 'text-emerald-500',
-    secondary: 'text-teal-500',
-    bgColor: 'bg-gray-50',
-    cardBg: 'bg-white',
-    buttonPrimary: 'bg-emerald-600 hover:bg-emerald-500',
-    buttonSecondary: 'bg-teal-600 hover:bg-teal-500',
-    buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
-    textColor: 'text-gray-800',
-    accentLight: 'bg-emerald-50',
-    isDark: false
-  },
-  {
-    id: 'amber',
-    name: 'Amber Glow',
-    primary: 'text-amber-500',
-    secondary: 'text-orange-500',
-    bgColor: 'bg-stone-900',
-    cardBg: 'bg-stone-800',
-    buttonPrimary: 'bg-amber-600 hover:bg-amber-500',
-    buttonSecondary: 'bg-orange-600 hover:bg-orange-500',
-    buttonNeutral: 'bg-stone-700 hover:bg-stone-600',
-    textColor: 'text-stone-100',
-    accentLight: 'bg-amber-900 bg-opacity-30',
-    isDark: true
-  },
-  {
-    id: 'rose',
-    name: 'Rose Garden',
-    primary: 'text-rose-500',
-    secondary: 'text-pink-500',
-    bgColor: 'bg-gray-100',
-    cardBg: 'bg-white',
-    buttonPrimary: 'bg-rose-600 hover:bg-rose-500',
-    buttonSecondary: 'bg-pink-600 hover:bg-pink-500',
-    buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
-    textColor: 'text-gray-800',
-    accentLight: 'bg-rose-50',
-    isDark: false
-  }
-];
+import { useTheme } from './ThemeContext.jsx';
 
 export default function PomodoroApp() {
-  const [time, setTime] = useState(25 * 60 * 1000); // Default 25 minutes
+  const { themeIndex, setThemeIndex } = useTheme();
+  console.log('PomodoroApp themeIndex:', themeIndex); // Debug log
+
+  const [time, setTime] = useState(25 * 60 * 1000);
   const [isRunning, setIsRunning] = useState(false);
-  const [themeIndex, setThemeIndex] = useState(0);
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showThemePanel, setShowThemePanel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [mode, setMode] = useState('focus'); // focus, shortBreak, longBreak
+  const [mode, setMode] = useState('focus');
   const [cycle, setCycle] = useState({ focus: 4, shortBreak: 3, longBreak: 1 });
   const [customTimes, setCustomTimes] = useState({
     focus: 25,
@@ -91,10 +20,82 @@ export default function PomodoroApp() {
   });
   const [currentCycle, setCurrentCycle] = useState(1);
   const intervalRef = useRef(null);
-  const themeSelectorRef = useRef(null);
   const audioRef = useRef(new Audio('/assets/alarm.mp3'));
 
-  const currentTheme = themes[themeIndex];
+  const themes = [
+    {
+      id: 'sky',
+      name: 'Sky Blue',
+      primary: 'text-sky-500',
+      secondary: 'text-indigo-500',
+      bgColor: 'bg-slate-50',
+      cardBg: 'bg-white',
+      buttonPrimary: 'bg-sky-500 hover:bg-sky-400',
+      buttonSecondary: 'bg-indigo-500 hover:bg-indigo-400',
+      buttonNeutral: 'bg-slate-300 hover:bg-slate-200',
+      textColor: 'text-gray-800',
+      accentLight: 'bg-sky-50',
+      isDark: false
+    },
+    {
+      id: 'violet',
+      name: 'Violet Dream',
+      primary: 'text-violet-500',
+      secondary: 'text-fuchsia-500',
+      bgColor: 'bg-gray-900',
+      cardBg: 'bg-gray-800',
+      buttonPrimary: 'bg-violet-600 hover:bg-violet-500',
+      buttonSecondary: 'bg-fuchsia-600 hover:bg-fuchsia-500',
+      buttonNeutral: 'bg-gray-700 hover:bg-gray-600',
+      textColor: 'text-gray-100',
+      accentLight: 'bg-violet-900 bg-opacity-30',
+      isDark: true
+    },
+    {
+      id: 'emerald',
+      name: 'Emerald Forest',
+      primary: 'text-emerald-500',
+      secondary: 'text-teal-500',
+      bgColor: 'bg-gray-50',
+      cardBg: 'bg-white',
+      buttonPrimary: 'bg-emerald-600 hover:bg-emerald-500',
+      buttonSecondary: 'bg-teal-600 hover:bg-teal-500',
+      buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
+      textColor: 'text-gray-800',
+      accentLight: 'bg-emerald-50',
+      isDark: false
+    },
+    {
+      id: 'amber',
+      name: 'Amber Glow',
+      primary: 'text-amber-500',
+      secondary: 'text-orange-500',
+      bgColor: 'bg-stone-900',
+      cardBg: 'bg-stone-800',
+      buttonPrimary: 'bg-amber-600 hover:bg-amber-500',
+      buttonSecondary: 'bg-orange-600 hover:bg-orange-500',
+      buttonNeutral: 'bg-stone-700 hover:bg-stone-600',
+      textColor: 'text-stone-100',
+      accentLight: 'bg-amber-900 bg-opacity-30',
+      isDark: true
+    },
+    {
+      id: 'rose',
+      name: 'Rose Garden',
+      primary: 'text-rose-500',
+      secondary: 'text-pink-500',
+      bgColor: 'bg-gray-100',
+      cardBg: 'bg-white',
+      buttonPrimary: 'bg-rose-600 hover:bg-rose-500',
+      buttonSecondary: 'bg-pink-600 hover:bg-pink-500',
+      buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
+      textColor: 'text-gray-800',
+      accentLight: 'bg-rose-50',
+      isDark: false
+    },
+  ];
+
+  const theme = themes[themeIndex] || themes[3]; // Fallback to Amber
 
   useEffect(() => {
     if (isRunning) {
@@ -113,16 +114,6 @@ export default function PomodoroApp() {
     }
     return () => clearInterval(intervalRef.current);
   }, [isRunning, mode]);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (themeSelectorRef.current && !themeSelectorRef.current.contains(event.target)) {
-        setShowThemeSelector(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleCycleTransition = () => {
     setIsRunning(false);
@@ -152,13 +143,14 @@ export default function PomodoroApp() {
     setCurrentCycle(1);
   };
 
-  const toggleThemeSelector = () => {
-    setShowThemeSelector(!showThemeSelector);
+  const toggleThemePanel = () => {
+    setShowThemePanel(!showThemePanel);
+    setShowSettings(false);
   };
 
   const selectTheme = (index) => {
     setThemeIndex(index);
-    setShowThemeSelector(false);
+    setShowThemePanel(false);
   };
 
   const handleSettingsChange = (e) => {
@@ -188,67 +180,38 @@ export default function PomodoroApp() {
   };
 
   return (
-    <div className={`min-h-screen ${currentTheme.bgColor} ${currentTheme.textColor} transition-colors duration-500 font-sans`}>
+    <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} transition-colors duration-500 font-sans`}>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto">
-          {/* Header */}
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center">
-              <Clock className={`${currentTheme.primary} mr-2`} size={24} />
-              <h1 className={`text-2xl font-extrabold tracking-tight ${currentTheme.primary}`}>Pomodoro</h1>
+              <Clock className={`${theme.primary} mr-2`} size={24} />
+              <h1 className={`text-2xl font-extrabold tracking-tight ${theme.primary}`}>Pomodoro</h1>
             </div>
-            <div className="relative" ref={themeSelectorRef}>
-              <button
-                onClick={toggleThemeSelector}
-                className={`p-3 rounded-full ${currentTheme.cardBg} shadow-lg transition-transform duration-300 hover:scale-110`}
-                aria-label="Change theme"
-              >
-                <Palette className={currentTheme.secondary} size={20} />
-              </button>
-              {showThemeSelector && (
-                <div className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg ${currentTheme.cardBg} z-10 py-1 animate-fade-in`}>
-                  <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                    <p className="font-medium">Select Theme</p>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    {themes.map((theme, index) => (
-                      <button
-                        key={theme.id}
-                        onClick={() => selectTheme(index)}
-                        className={`w-full px-4 py-3 text-left flex items-center hover:${theme.accentLight} transition-colors ${
-                          index === themeIndex ? `${theme.accentLight} font-medium` : ''
-                        }`}
-                      >
-                        <div className="flex space-x-1 mr-2">
-                          <div className={`w-3 h-3 rounded-full bg-current ${theme.primary}`}></div>
-                          <div className={`w-3 h-3 rounded-full bg-current ${theme.secondary}`}></div>
-                        </div>
-                        {theme.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={toggleThemePanel}
+              className={`p-3 rounded-full ${theme.cardBg} shadow-lg transition-transform duration-300 hover:scale-110`}
+              aria-label="Change theme"
+            >
+              <Palette className={theme.secondary} size={20} />
+            </button>
           </div>
 
-          {/* Timer Display */}
-          <div className={`${currentTheme.cardBg} rounded-2xl p-8 shadow-xl mb-8 relative overflow-hidden transition-all duration-500`}>
+          <div className={`${theme.cardBg} rounded-2xl p-8 shadow-xl mb-8 relative overflow-hidden transition-all duration-500`}>
             <div className="absolute inset-0 overflow-hidden opacity-10">
-              <div className={`absolute w-32 h-32 rounded-full ${currentTheme.primary} bg-current top-0 left-0 -translate-x-1/2 -translate-y-1/2 animate-pulse`}></div>
-              <div className={`absolute w-40 h-40 rounded-full ${currentTheme.secondary} bg-current bottom-0 right-0 translate-x-1/2 translate-y-1/2 animate-pulse`} style={{animationDelay: '1s'}}></div>
+              <div className={`absolute w-32 h-32 rounded-full ${theme.primary} bg-current top-0 left-0 -translate-x-1/2 -translate-y-1/2 animate-pulse`}></div>
+              <div className={`absolute w-40 h-40 rounded-full ${theme.secondary} bg-current bottom-0 right-0 translate-x-1/2 translate-y-1/2 animate-pulse`} style={{ animationDelay: '1s' }}></div>
             </div>
             <div className="relative text-center">
               <div className={`text-6xl font-mono font-bold tracking-tight mb-1 ${isRunning ? 'animate-pulse' : ''}`}>
-                <span className={`${currentTheme.primary}`}>{formatTime(time)}</span>
+                <span className={`${theme.primary}`}>{formatTime(time)}</span>
               </div>
-              <div className={`mt-4 text-sm font-medium ${currentTheme.secondary}`}>
+              <div className={`mt-4 text-sm font-medium ${theme.secondary}`}>
                 {mode === 'focus' ? 'Focus' : mode === 'shortBreak' ? 'Short Break' : 'Long Break'} {currentCycle}/{cycle[mode]}
               </div>
             </div>
           </div>
 
-          {/* Mode Buttons */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <button
               onClick={() => {
@@ -256,7 +219,7 @@ export default function PomodoroApp() {
                 setTime(customTimes.focus * 60 * 1000);
                 setIsRunning(false);
               }}
-              className={`py-3 rounded-xl font-medium ${mode === 'focus' ? currentTheme.buttonPrimary : currentTheme.buttonNeutral} ${currentTheme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
+              className={`py-3 rounded-xl font-medium ${mode === 'focus' ? theme.buttonPrimary : theme.buttonNeutral} ${theme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
             >
               Focus
             </button>
@@ -266,7 +229,7 @@ export default function PomodoroApp() {
                 setTime(customTimes.shortBreak * 60 * 1000);
                 setIsRunning(false);
               }}
-              className={`py-3 rounded-xl font-medium ${mode === 'shortBreak' ? currentTheme.buttonPrimary : currentTheme.buttonNeutral} ${currentTheme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
+              className={`py-3 rounded-xl font-medium ${mode === 'shortBreak' ? theme.buttonPrimary : theme.buttonNeutral} ${theme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
             >
               Short Break
             </button>
@@ -276,41 +239,65 @@ export default function PomodoroApp() {
                 setTime(customTimes.longBreak * 60 * 1000);
                 setIsRunning(false);
               }}
-              className={`py-3 rounded-xl font-medium ${mode === 'longBreak' ? currentTheme.buttonPrimary : currentTheme.buttonNeutral} ${currentTheme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
+              className={`py-3 rounded-xl font-medium ${mode === 'longBreak' ? theme.buttonPrimary : theme.buttonNeutral} ${theme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105 transition-all`}
             >
               Long Break
             </button>
           </div>
 
-          {/* Control Buttons */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <button
               onClick={handleStartStop}
-              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${currentTheme.buttonPrimary} hover:scale-105`}
+              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonPrimary} hover:scale-105`}
             >
               {isRunning ? <Pause size={20} className="mr-1" /> : <Play size={20} className="mr-1" />}
               {isRunning ? 'Pause' : 'Start'}
             </button>
             <button
-              onClick={() => setShowSettings(!showSettings)}
-              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${currentTheme.buttonSecondary} hover:scale-105`}
+              onClick={() => {
+                setShowSettings(!showSettings);
+                setShowThemePanel(false);
+              }}
+              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonSecondary} hover:scale-105`}
             >
               <Settings size={20} className="mr-1" />
               Settings
             </button>
             <button
               onClick={handleReset}
-              className={`col-span-1 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${currentTheme.buttonNeutral} ${currentTheme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105`}
+              className={`col-span-1 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonNeutral} ${theme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105`}
             >
               <RotateCcw size={20} className="mr-1" />
               Reset
             </button>
           </div>
 
-          {/* Settings Panel */}
+          {showThemePanel && (
+            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4`}>Select Theme</h2>
+              <div className="grid grid-cols-1 gap-2">
+                {themes.map((themeOption, index) => (
+                  <button
+                    key={themeOption.id}
+                    onClick={() => selectTheme(index)}
+                    className={`flex items-center py-3 px-4 rounded-lg hover:${themeOption.accentLight} transition-colors ${
+                      index === themeIndex ? `${themeOption.accentLight} font-medium` : ''
+                    }`}
+                  >
+                    <div className="flex space-x-1 mr-3">
+                      <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
+                      <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
+                    </div>
+                    <span>{themeOption.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {showSettings && (
-            <div className={`${currentTheme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
-              <h2 className={`text-xl font-bold ${currentTheme.primary} mb-4`}>Pomodoro Settings</h2>
+            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4`}>Pomodoro Settings</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Focus Time (minutes)</label>
@@ -320,7 +307,7 @@ export default function PomodoroApp() {
                     value={customTimes.focus}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
                 <div>
@@ -331,7 +318,7 @@ export default function PomodoroApp() {
                     value={customTimes.shortBreak}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
                 <div>
@@ -342,7 +329,7 @@ export default function PomodoroApp() {
                     value={customTimes.longBreak}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
                 <div>
@@ -353,7 +340,7 @@ export default function PomodoroApp() {
                     value={cycle.focus}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
                 <div>
@@ -364,7 +351,7 @@ export default function PomodoroApp() {
                     value={cycle.shortBreak}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
                 <div>
@@ -375,7 +362,7 @@ export default function PomodoroApp() {
                     value={cycle.longBreak}
                     onChange={handleSettingsChange}
                     min="1"
-                    className={`w-full p-2 rounded-lg ${currentTheme.accentLight} ${currentTheme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${currentTheme.primary.split('-')[1]}-500`}
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
                   />
                 </div>
               </div>
