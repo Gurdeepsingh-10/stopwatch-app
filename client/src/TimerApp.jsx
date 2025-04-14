@@ -1,18 +1,18 @@
-// src/StopwatchApp.jsx
+// client/src/TimerApp.jsx
 import { useState, useEffect, useRef } from 'react';
-import { RotateCcw, Play, Pause, Flag, Clock, Palette, Info } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Palette, Settings } from 'lucide-react'; // Removed Plus import
 import { useTheme } from './ThemeContext.jsx';
 
-export default function StopwatchApp() {
+export default function TimerApp() {
   const { themeIndex, setThemeIndex } = useTheme();
-  console.log('StopwatchApp themeIndex:', themeIndex); // Debug log
+  console.log('TimerApp themeIndex:', themeIndex); // Debug log
 
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(0); // Time in milliseconds
   const [isRunning, setIsRunning] = useState(false);
-  const [laps, setLaps] = useState([]);
+  const [showSettings, setShowSettings] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
+  const [settings, setSettings] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const intervalRef = useRef(null);
-  const lapsContainerRef = useRef(null);
 
   const themes = [
     {
@@ -28,7 +28,7 @@ export default function StopwatchApp() {
       textColor: 'text-gray-800',
       accentLight: 'bg-sky-50',
       isDark: false,
-      illustration: null // Removed animation-related properties
+      illustration: null
     },
     {
       id: 'violet',
@@ -126,72 +126,78 @@ export default function StopwatchApp() {
 
   const theme = themes[themeIndex] || themes[3]; // Fallback to Amber
 
+  // Calculate total time in milliseconds from settings
+  const calculateTotalTime = () => {
+    const { hours, minutes, seconds } = settings;
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
+  };
+
+  // Format milliseconds to hh:mm:ss
+  const formatTime = (timeMs) => {
+    const totalSeconds = Math.floor(timeMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
-    if (isRunning) {
+    if (isRunning && time > 0) {
       intervalRef.current = setInterval(() => {
-        setTime(prevTime => prevTime + 10);
-      }, 10);
+        setTime(prevTime => {
+          if (prevTime <= 0) {
+            clearInterval(intervalRef.current);
+            setIsRunning(false);
+            return 0;
+          }
+          return prevTime - 1000;
+        });
+      }, 1000);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [isRunning]);
-
-  useEffect(() => {
-    if (lapsContainerRef.current && laps.length > 0) {
-      lapsContainerRef.current.scrollTop = 0;
-    }
-  }, [laps]);
+  }, [isRunning, time]);
 
   const handleStartStop = () => {
+    if (!isRunning && time <= 0) {
+      setTime(calculateTotalTime()); // Set initial time from settings
+    }
     setIsRunning(!isRunning);
   };
 
   const handleReset = () => {
     setIsRunning(false);
-    setTime(0);
-    setLaps([]);
+    setTime(calculateTotalTime());
   };
 
-  const handleLap = () => {
-    if (isRunning) {
-      setLaps(prevLaps => [{
-        id: Date.now(),
-        time: time,
-        index: prevLaps.length + 1
-      }, ...prevLaps]);
+  const handleSettingsChange = (e) => {
+    const { name, value } = e.target;
+    const intValue = Math.max(0, parseInt(value) || 0); // Ensure non-negative
+    setSettings(prev => ({
+      ...prev,
+      [name]: intValue
+    }));
+    if (!isRunning) {
+      setTime(calculateTotalTime());
+    }
+  };
+
+  const increaseTime = (minutes) => {
+    if (isRunning && time > 0) {
+      setTime(prevTime => prevTime + minutes * 60 * 1000); // Add extra time
     }
   };
 
   const toggleThemePanel = () => {
     setShowThemePanel(!showThemePanel);
+    setShowSettings(false);
   };
 
   const selectTheme = (index) => {
     setThemeIndex(index);
     setShowThemePanel(false);
   };
-
-  const formatTime = (time) => {
-    const hours = Math.floor(time / 3600000);
-    const minutes = Math.floor((time % 3600000) / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
-    const milliseconds = Math.floor((time % 1000) / 10);
-
-    if (minutes < 60) {
-      return {
-        main: `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
-        ms: `.${milliseconds.toString().padStart(2, '0')}`
-      };
-    } else {
-      return {
-        main: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
-        ms: ''
-      };
-    }
-  };
-
-  const { main, ms } = formatTime(time);
 
   return (
     <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} transition-colors duration-500 font-${theme.fontFamily || 'sans'}`}>
@@ -200,7 +206,7 @@ export default function StopwatchApp() {
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center">
               <Clock className={`${theme.primary} mr-2`} size={24} />
-              <h1 className={`text-2xl font-extrabold tracking-tight ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Stopwatch 🕒</h1>
+              <h1 className={`text-2xl font-extrabold tracking-tight ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Timer ⏰</h1>
             </div>
             <button
               onClick={toggleThemePanel}
@@ -213,12 +219,9 @@ export default function StopwatchApp() {
 
           <div className={`${theme.cardBg} rounded-2xl p-8 shadow-xl mb-8 relative overflow-hidden transition-all duration-500`}>
             <div className="relative text-center">
-              <div className={`text-6xl font-mono font-bold tracking-tight mb-1`}>
+              <div className={`text-6xl font-mono font-bold tracking-tight mb-1 ${isRunning && time > 0 ? 'animate-pulse' : ''}`}>
                 <span className={theme.primary}>
-                  {main}
-                </span>
-                <span className={`text-4xl ${theme.secondary}`}>
-                  {ms}
+                  {formatTime(time)}
                 </span>
               </div>
               <div className={`mt-4 text-sm font-medium ${isRunning ? theme.secondary : 'text-gray-500'}`}>
@@ -231,26 +234,97 @@ export default function StopwatchApp() {
             <button
               onClick={handleStartStop}
               className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonPrimary} hover:scale-105`}
+              disabled={time <= 0}
             >
               {isRunning ? <Pause size={20} className="mr-1" /> : <Play size={20} className="mr-1" />}
-              {isRunning ? 'Stop' : 'Start'}
+              {isRunning ? 'Pause' : 'Start'}
             </button>
             <button
-              onClick={handleLap}
-              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonSecondary} hover:scale-105 ${!isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={!isRunning}
+              onClick={() => { setShowSettings(!showSettings); setShowThemePanel(false); }}
+              className={`col-span-1 py-4 rounded-xl text-white font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonSecondary} hover:scale-105`}
             >
-              <Flag size={20} className="mr-1" />
-              Lap
+              <Settings size={20} className="mr-1" />
+              Settings
             </button>
             <button
               onClick={handleReset}
               className={`col-span-1 py-4 rounded-xl font-bold shadow-lg transition-all duration-300 flex items-center justify-center ${theme.buttonNeutral} ${theme.isDark ? 'text-white' : 'text-gray-700'} hover:scale-105`}
+              disabled={time <= 0}
             >
               <RotateCcw size={20} className="mr-1" />
               Reset
             </button>
           </div>
+
+          {isRunning && time > 0 && (
+            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 text-center transition-all duration-500`}>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Increase Timer</h2>
+              <div className="grid grid-cols-3 gap-4">
+                <button
+                  onClick={() => increaseTime(5)}
+                  className={`py-3 rounded-xl font-medium ${theme.buttonSecondary} text-white hover:scale-105 transition-all duration-300`}
+                >
+                  5 mins
+                </button>
+                <button
+                  onClick={() => increaseTime(10)}
+                  className={`py-3 rounded-xl font-medium ${theme.buttonSecondary} text-white hover:scale-105 transition-all duration-300`}
+                >
+                  10 mins
+                </button>
+                <button
+                  onClick={() => increaseTime(20)}
+                  className={`py-3 rounded-xl font-medium ${theme.buttonSecondary} text-white hover:scale-105 transition-all duration-300`}
+                >
+                  20 mins
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showSettings && (
+            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Timer Settings 🛠️</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Hours</label>
+                  <input
+                    type="number"
+                    name="hours"
+                    value={settings.hours}
+                    onChange={handleSettingsChange}
+                    min="0"
+                    max="23"
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Minutes</label>
+                  <input
+                    type="number"
+                    name="minutes"
+                    value={settings.minutes}
+                    onChange={handleSettingsChange}
+                    min="0"
+                    max="59"
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Seconds</label>
+                  <input
+                    type="number"
+                    name="seconds"
+                    value={settings.seconds}
+                    onChange={handleSettingsChange}
+                    min="0"
+                    max="59"
+                    className={`w-full p-2 rounded-lg ${theme.accentLight} ${theme.textColor} border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-${theme.primary.split('-')[1]}-500`}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {showThemePanel && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
@@ -274,62 +348,8 @@ export default function StopwatchApp() {
               </div>
             </div>
           )}
-
-          {laps.length > 0 && (
-            <div className={`mt-8 rounded-2xl ${theme.cardBg} shadow-lg overflow-hidden transition-all duration-500`}>
-              <div className="p-4 border-b border-opacity-20 border-gray-500">
-                <h2 className={`text-xl font-bold ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Laps</h2>
-              </div>
-              <div
-                ref={lapsContainerRef}
-                className="max-h-80 overflow-y-auto py-2 scroll-smooth"
-                style={{
-                  scrollbarWidth: 'thin',
-                  scrollbarColor: theme.isDark
-                    ? `${theme.buttonPrimary.split(' ')[0].replace('bg-', '#')} #1f2937`
-                    : `${theme.buttonPrimary.split(' ')[0].replace('bg-', '#')} #f9fafb`
-                }}
-              >
-                {laps.map((lap, idx) => {
-                  const formattedLapTime = formatTime(lap.time);
-                  return (
-                    <div
-                      key={lap.id}
-                      className={`flex justify-between items-center py-3 px-4 border-b border-opacity-10 border-gray-500 last:border-0`}
-                    >
-                      <div className="font-medium">Lap {lap.index}</div>
-                      <div className="">
-                        {formattedLapTime.main}
-                        <span className={theme.secondary}>{formattedLapTime.ms}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
-
-// Rest of the file (formatTime function) remains unchanged
-const formatTime = (time) => {
-  const hours = Math.floor(time / 3600000);
-  const minutes = Math.floor((time % 3600000) / 60000);
-  const seconds = Math.floor((time % 60000) / 1000);
-  const milliseconds = Math.floor((time % 1000) / 10);
-
-  if (minutes < 60) {
-    return {
-      main: `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
-      ms: `.${milliseconds.toString().padStart(2, '0')}`
-    };
-  } else {
-    return {
-      main: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
-      ms: ''
-    };
-  }
-};

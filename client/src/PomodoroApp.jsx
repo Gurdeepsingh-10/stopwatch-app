@@ -1,4 +1,4 @@
-// src/PomodoroApp.jsx
+// client/src/PomodoroApp.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Clock, Palette, Play, Pause, RotateCcw, Settings } from 'lucide-react';
 import { useTheme } from './ThemeContext.jsx';
@@ -242,7 +242,7 @@ export default function PomodoroApp() {
           }
         `}
       </style>
-      <div className="container mx-auto px-4 py-8 relative">
+      <div className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center">
@@ -268,7 +268,7 @@ export default function PomodoroApp() {
                 </span>
               )}
             </div>
-            <div className="relative text-center">
+            <div className="text-center">
               <div className={`text-6xl font-mono font-bold tracking-tight mb-1 ${isRunning ? 'animate-pulse' : ''}`}>
                 <span className={`${theme.primary}`}>{formatTime(time)}</span>
               </div>
@@ -340,7 +340,7 @@ export default function PomodoroApp() {
 
           {showThemePanel && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a  Theme! ✨</h2>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Cute Theme! ✨</h2>
               <div className="grid grid-cols-1 gap-2">
                 {themes.map((themeOption, index) => (
                   <button
@@ -354,7 +354,7 @@ export default function PomodoroApp() {
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
                     </div>
-                    <span>{themeOption.name} </span>
+                    <span>{themeOption.name} 🌸</span>
                   </button>
                 ))}
               </div>
@@ -439,5 +439,3 @@ export default function PomodoroApp() {
     </div>
   );
 }
-
-// Rest of the file (formatTime function and useEffect logic) remains unchanged
