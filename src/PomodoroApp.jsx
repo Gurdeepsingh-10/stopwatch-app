@@ -93,6 +93,40 @@ export default function PomodoroApp() {
       accentLight: 'bg-rose-50',
       isDark: false
     },
+    {
+      id: 'pinkyPuff',
+      name: 'Pinky Puff',
+      primary: 'text-pink-400',
+      secondary: 'text-rose-300',
+      bgColor: 'bg-pink-50',
+      cardBg: 'bg-cream-100', // Custom cream color
+      buttonPrimary: 'bg-pink-400 hover:bg-pink-300',
+      buttonSecondary: 'bg-rose-300 hover:bg-rose-200',
+      buttonNeutral: 'bg-cream-200 hover:bg-cream-300',
+      textColor: 'text-pink-800',
+      accentLight: 'bg-pink-100',
+      isDark: false,
+      fontFamily: 'cursive',
+      illustration: '🐰',
+      animation: 'bounce 2s infinite'
+    },
+    {
+      id: 'midnightMarshmallow',
+      name: 'Midnight Marshmallow',
+      primary: 'text-purple-300',
+      secondary: 'text-lavender-200',
+      bgColor: 'bg-purple-900',
+      cardBg: 'bg-purple-800',
+      buttonPrimary: 'bg-purple-500 hover:bg-purple-400',
+      buttonSecondary: 'bg-lavender-300 hover:bg-lavender-200',
+      buttonNeutral: 'bg-gray-700 hover:bg-gray-600',
+      textColor: 'text-white',
+      accentLight: 'bg-purple-900 bg-opacity-20',
+      isDark: true,
+      fontFamily: 'cursive',
+      illustration: '😺',
+      animation: 'float 3s infinite'
+    },
   ];
 
   const theme = themes[themeIndex] || themes[3]; // Fallback to Amber
@@ -180,13 +214,30 @@ export default function PomodoroApp() {
   };
 
   return (
-    <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} transition-colors duration-500 font-sans`}>
-      <div className="container mx-auto px-4 py-8">
+    <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} transition-colors duration-500 font-${theme.fontFamily || 'sans'}`}>
+      <style>
+        {`
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+          }
+          .cute-illustration {
+            animation: ${theme.animation};
+            font-size: 2rem;
+            position: absolute;
+          }
+        `}
+      </style>
+      <div className="container mx-auto px-4 py-8 relative">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center">
               <Clock className={`${theme.primary} mr-2`} size={24} />
-              <h1 className={`text-2xl font-extrabold tracking-tight ${theme.primary}`}>Pomodoro</h1>
+              <h1 className={`text-2xl font-extrabold tracking-tight ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Pomodoro 🍅</h1>
             </div>
             <button
               onClick={toggleThemePanel}
@@ -201,13 +252,18 @@ export default function PomodoroApp() {
             <div className="absolute inset-0 overflow-hidden opacity-10">
               <div className={`absolute w-32 h-32 rounded-full ${theme.primary} bg-current top-0 left-0 -translate-x-1/2 -translate-y-1/2 animate-pulse`}></div>
               <div className={`absolute w-40 h-40 rounded-full ${theme.secondary} bg-current bottom-0 right-0 translate-x-1/2 translate-y-1/2 animate-pulse`} style={{ animationDelay: '1s' }}></div>
+              {theme.illustration && (
+                <span className={`cute-illustration ${theme.primary} top-1/4 left-1/4`}>
+                  {theme.illustration}
+                </span>
+              )}
             </div>
             <div className="relative text-center">
               <div className={`text-6xl font-mono font-bold tracking-tight mb-1 ${isRunning ? 'animate-pulse' : ''}`}>
                 <span className={`${theme.primary}`}>{formatTime(time)}</span>
               </div>
               <div className={`mt-4 text-sm font-medium ${theme.secondary}`}>
-                {mode === 'focus' ? 'Focus' : mode === 'shortBreak' ? 'Short Break' : 'Long Break'} {currentCycle}/{cycle[mode]}
+                {mode === 'focus' ? 'Focus 🌱' : mode === 'shortBreak' ? 'Short Break ☕' : 'Long Break 🌙'} {currentCycle}/{cycle[mode]}
               </div>
             </div>
           </div>
@@ -274,7 +330,7 @@ export default function PomodoroApp() {
 
           {showThemePanel && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4`}>Select Theme</h2>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Theme! </h2>
               <div className="grid grid-cols-1 gap-2">
                 {themes.map((themeOption, index) => (
                   <button
@@ -282,13 +338,13 @@ export default function PomodoroApp() {
                     onClick={() => selectTheme(index)}
                     className={`flex items-center py-3 px-4 rounded-lg hover:${themeOption.accentLight} transition-colors ${
                       index === themeIndex ? `${themeOption.accentLight} font-medium` : ''
-                    }`}
+                    } ${themeOption.fontFamily ? 'font-cursive' : ''}`}
                   >
                     <div className="flex space-x-1 mr-3">
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
                     </div>
-                    <span>{themeOption.name}</span>
+                    <span>{themeOption.name} </span>
                   </button>
                 ))}
               </div>
@@ -297,7 +353,7 @@ export default function PomodoroApp() {
 
           {showSettings && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4`}>Pomodoro Settings</h2>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pomodoro Settings 🛠️</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Focus Time (minutes)</label>
@@ -373,3 +429,5 @@ export default function PomodoroApp() {
     </div>
   );
 }
+
+// Rest of the file (formatTime function and useEffect logic) remains unchanged

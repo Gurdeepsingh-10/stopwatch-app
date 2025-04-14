@@ -1,10 +1,20 @@
 /* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap'); /* Cute cursive font */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom colors for cream shades */
+@layer base {
+  .bg-cream-100 { background-color: #FFF5E1; }
+  .bg-cream-200 { background-color: #FFE8CC; }
+  .bg-cream-300 { background-color: #FFDAB9; }
+  .text-lavender-200 { color: #E6E6FA; }
+  .bg-lavender-200 { background-color: #E6E6FA; }
+  .bg-lavender-300 { background-color: #D8BFD8; }
+}
 
 /* Reset all margins and paddings to ensure no white space */
 html {
@@ -22,6 +32,7 @@ body {
   height: 100%;
   overflow-x: hidden;
   background-color: inherit;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Custom scrollbar styling */
@@ -50,6 +61,20 @@ body {
   }
 }
 
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.font-cursive {
+  font-family: 'Pacifico', cursive !important;
 }
