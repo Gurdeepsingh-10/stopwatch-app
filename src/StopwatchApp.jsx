@@ -28,7 +28,9 @@ export default function StopwatchApp() {
       buttonNeutral: 'bg-slate-300 hover:bg-slate-200',
       textColor: 'text-gray-800',
       accentLight: 'bg-sky-50',
-      isDark: false
+      isDark: false,
+      illustration: '☁️',
+      animation: 'float 3s infinite'
     },
     {
       id: 'violet',
@@ -42,7 +44,9 @@ export default function StopwatchApp() {
       buttonNeutral: 'bg-gray-700 hover:bg-gray-600',
       textColor: 'text-gray-100',
       accentLight: 'bg-violet-900 bg-opacity-30',
-      isDark: true
+      isDark: true,
+      illustration: '⭐',
+      animation: 'float 3s infinite'
     },
     {
       id: 'emerald',
@@ -56,7 +60,9 @@ export default function StopwatchApp() {
       buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
       textColor: 'text-gray-800',
       accentLight: 'bg-emerald-50',
-      isDark: false
+      isDark: false,
+      illustration: '🌳',
+      animation: 'bounce 2s infinite'
     },
     {
       id: 'amber',
@@ -70,7 +76,9 @@ export default function StopwatchApp() {
       buttonNeutral: 'bg-stone-700 hover:bg-stone-600',
       textColor: 'text-stone-100',
       accentLight: 'bg-amber-900 bg-opacity-30',
-      isDark: true
+      isDark: true,
+      illustration: '☀️',
+      animation: 'bounce 2s infinite'
     },
     {
       id: 'rose',
@@ -84,7 +92,9 @@ export default function StopwatchApp() {
       buttonNeutral: 'bg-gray-300 hover:bg-gray-200',
       textColor: 'text-gray-800',
       accentLight: 'bg-rose-50',
-      isDark: false
+      isDark: false,
+      illustration: '🌹',
+      animation: 'float 3s infinite'
     },
     {
       id: 'pinkyPuff',
@@ -92,22 +102,22 @@ export default function StopwatchApp() {
       primary: 'text-pink-400',
       secondary: 'text-rose-300',
       bgColor: 'bg-pink-50',
-      cardBg: 'bg-cream-100', // Custom cream color (approx #FFF5E1)
+      cardBg: 'bg-cream-100',
       buttonPrimary: 'bg-pink-400 hover:bg-pink-300',
       buttonSecondary: 'bg-rose-300 hover:bg-rose-200',
-      buttonNeutral: 'bg-cream-200 hover:bg-cream-300', // Custom cream shades
+      buttonNeutral: 'bg-cream-200 hover:bg-cream-300',
       textColor: 'text-pink-800',
       accentLight: 'bg-pink-100',
       isDark: false,
-      fontFamily: 'cursive', // Cute font (ensure font is loaded or use a fallback)
-      illustration: '🐰', // Placeholder for bunny illustration
+      fontFamily: 'cursive',
+      illustration: '🐰',
       animation: 'bounce 2s infinite'
     },
     {
       id: 'midnightMarshmallow',
       name: 'Midnight Marshmallow',
       primary: 'text-purple-300',
-      secondary: 'text-lavender-200', // Custom lavender (approx #E6E6FA)
+      secondary: 'text-lavender-200',
       bgColor: 'bg-purple-900',
       cardBg: 'bg-purple-800',
       buttonPrimary: 'bg-purple-500 hover:bg-purple-400',
@@ -117,7 +127,7 @@ export default function StopwatchApp() {
       accentLight: 'bg-purple-900 bg-opacity-20',
       isDark: true,
       fontFamily: 'cursive',
-      illustration: '😺', // Placeholder for kitten illustration
+      illustration: '😺',
       animation: 'float 3s infinite'
     },
   ];
@@ -284,7 +294,7 @@ export default function StopwatchApp() {
 
           {showThemePanel && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Theme! </h2>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Cute Theme! ✨</h2>
               <div className="grid grid-cols-1 gap-2">
                 {themes.map((themeOption, index) => (
                   <button
@@ -298,7 +308,7 @@ export default function StopwatchApp() {
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
                     </div>
-                    <span>{themeOption.name} </span>
+                    <span>{themeOption.name} 🌸</span>
                   </button>
                 ))}
               </div>
