@@ -49,7 +49,7 @@ body {
   border-radius: 6px;
 }
 
-/* Animation for new laps */
+/* Animation for new laps and About section */
 @keyframes fadeIn {
   from {
     opacity: 0;
