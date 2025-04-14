@@ -340,7 +340,7 @@ export default function PomodoroApp() {
 
           {showThemePanel && (
             <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Cute Theme! ✨</h2>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a  Theme! ✨</h2>
               <div className="grid grid-cols-1 gap-2">
                 {themes.map((themeOption, index) => (
                   <button
@@ -354,7 +354,7 @@ export default function PomodoroApp() {
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
                     </div>
-                    <span>{themeOption.name} 🌸</span>
+                    <span>{themeOption.name} </span>
                   </button>
                 ))}
               </div>

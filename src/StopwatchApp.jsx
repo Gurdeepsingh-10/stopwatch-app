@@ -1,6 +1,6 @@
 // src/StopwatchApp.jsx
 import { useState, useEffect, useRef } from 'react';
-import { RotateCcw, Play, Pause, Flag, Clock, Palette } from 'lucide-react';
+import { RotateCcw, Play, Pause, Flag, Clock, Palette, Info } from 'lucide-react';
 import { useTheme } from './ThemeContext.jsx';
 
 export default function StopwatchApp() {
@@ -11,7 +11,6 @@ export default function StopwatchApp() {
   const [isRunning, setIsRunning] = useState(false);
   const [laps, setLaps] = useState([]);
   const [showThemePanel, setShowThemePanel] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(true);
   const intervalRef = useRef(null);
   const lapsContainerRef = useRef(null);
 
@@ -29,8 +28,7 @@ export default function StopwatchApp() {
       textColor: 'text-gray-800',
       accentLight: 'bg-sky-50',
       isDark: false,
-      illustration: '☁️',
-      animation: 'float 3s infinite'
+      illustration: null // Removed animation-related properties
     },
     {
       id: 'violet',
@@ -45,8 +43,7 @@ export default function StopwatchApp() {
       textColor: 'text-gray-100',
       accentLight: 'bg-violet-900 bg-opacity-30',
       isDark: true,
-      illustration: '⭐',
-      animation: 'float 3s infinite'
+      illustration: null
     },
     {
       id: 'emerald',
@@ -61,8 +58,7 @@ export default function StopwatchApp() {
       textColor: 'text-gray-800',
       accentLight: 'bg-emerald-50',
       isDark: false,
-      illustration: '🌳',
-      animation: 'bounce 2s infinite'
+      illustration: null
     },
     {
       id: 'amber',
@@ -77,8 +73,7 @@ export default function StopwatchApp() {
       textColor: 'text-stone-100',
       accentLight: 'bg-amber-900 bg-opacity-30',
       isDark: true,
-      illustration: '☀️',
-      animation: 'bounce 2s infinite'
+      illustration: null
     },
     {
       id: 'rose',
@@ -93,8 +88,7 @@ export default function StopwatchApp() {
       textColor: 'text-gray-800',
       accentLight: 'bg-rose-50',
       isDark: false,
-      illustration: '🌹',
-      animation: 'float 3s infinite'
+      illustration: null
     },
     {
       id: 'pinkyPuff',
@@ -110,8 +104,7 @@ export default function StopwatchApp() {
       accentLight: 'bg-pink-100',
       isDark: false,
       fontFamily: 'cursive',
-      illustration: '🐰',
-      animation: 'bounce 2s infinite'
+      illustration: null
     },
     {
       id: 'midnightMarshmallow',
@@ -127,8 +120,7 @@ export default function StopwatchApp() {
       accentLight: 'bg-purple-900 bg-opacity-20',
       isDark: true,
       fontFamily: 'cursive',
-      illustration: '😺',
-      animation: 'float 3s infinite'
+      illustration: null
     },
   ];
 
@@ -150,12 +142,6 @@ export default function StopwatchApp() {
       lapsContainerRef.current.scrollTop = 0;
     }
   }, [laps]);
-
-  useEffect(() => {
-    setShowAnimation(false);
-    const timer = setTimeout(() => setShowAnimation(true), 10);
-    return () => clearTimeout(timer);
-  }, [time]);
 
   const handleStartStop = () => {
     setIsRunning(!isRunning);
@@ -209,23 +195,6 @@ export default function StopwatchApp() {
 
   return (
     <div className={`min-h-screen ${theme.bgColor} ${theme.textColor} transition-colors duration-500 font-${theme.fontFamily || 'sans'}`}>
-      <style>
-        {`
-          @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-          }
-          @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-          }
-          .cute-illustration {
-            animation: ${theme.animation};
-            font-size: 2rem;
-            position: absolute;
-          }
-        `}
-      </style>
       <div className="container mx-auto px-4 py-8 relative">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-12">
@@ -243,26 +212,17 @@ export default function StopwatchApp() {
           </div>
 
           <div className={`${theme.cardBg} rounded-2xl p-8 shadow-xl mb-8 relative overflow-hidden transition-all duration-500`}>
-            <div className="absolute inset-0 overflow-hidden opacity-10">
-              <div className={`absolute w-32 h-32 rounded-full ${theme.primary} bg-current top-0 left-0 -translate-x-1/2 -translate-y-1/2 animate-pulse`}></div>
-              <div className={`absolute w-40 h-40 rounded-full ${theme.secondary} bg-current bottom-0 right-0 translate-x-1/2 translate-y-1/2 animate-pulse`} style={{ animationDelay: '1s' }}></div>
-              {theme.illustration && (
-                <span className={`cute-illustration ${theme.primary} top-1/4 left-1/4`}>
-                  {theme.illustration}
-                </span>
-              )}
-            </div>
             <div className="relative text-center">
-              <div className={`text-6xl font-mono font-bold tracking-tight mb-1 ${isRunning ? 'animate-pulse' : ''}`}>
-                <span className={`${showAnimation ? 'animate-pulse' : ''} inline-block transition-all ${theme.primary}`}>
+              <div className={`text-6xl font-mono font-bold tracking-tight mb-1`}>
+                <span className={theme.primary}>
                   {main}
                 </span>
-                <span className={`text-4xl ${theme.secondary} inline-block transition-all`}>
+                <span className={`text-4xl ${theme.secondary}`}>
                   {ms}
                 </span>
               </div>
               <div className={`mt-4 text-sm font-medium ${isRunning ? theme.secondary : 'text-gray-500'}`}>
-                {isRunning ? 'Running 🎉' : 'Stopped 😴'}
+                {isRunning ? 'Running' : 'Stopped'}
               </div>
             </div>
           </div>
@@ -293,8 +253,8 @@ export default function StopwatchApp() {
           </div>
 
           {showThemePanel && (
-            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500 animate-fade-in`}>
-              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Cute Theme! ✨</h2>
+            <div className={`${theme.cardBg} rounded-2xl p-6 shadow-xl mb-8 transition-all duration-500`}>
+              <h2 className={`text-xl font-bold ${theme.primary} mb-4 ${theme.fontFamily ? 'font-cursive' : ''}`}>Pick a Theme!</h2>
               <div className="grid grid-cols-1 gap-2">
                 {themes.map((themeOption, index) => (
                   <button
@@ -308,7 +268,7 @@ export default function StopwatchApp() {
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.primary}`}></div>
                       <div className={`w-4 h-4 rounded-full bg-current ${themeOption.secondary}`}></div>
                     </div>
-                    <span>{themeOption.name} 🌸</span>
+                    <span>{themeOption.name}</span>
                   </button>
                 ))}
               </div>
@@ -318,7 +278,7 @@ export default function StopwatchApp() {
           {laps.length > 0 && (
             <div className={`mt-8 rounded-2xl ${theme.cardBg} shadow-lg overflow-hidden transition-all duration-500`}>
               <div className="p-4 border-b border-opacity-20 border-gray-500">
-                <h2 className={`text-xl font-bold ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Laps 🐾</h2>
+                <h2 className={`text-xl font-bold ${theme.primary} ${theme.fontFamily ? 'font-cursive' : ''}`}>Laps</h2>
               </div>
               <div
                 ref={lapsContainerRef}
@@ -332,20 +292,13 @@ export default function StopwatchApp() {
               >
                 {laps.map((lap, idx) => {
                   const formattedLapTime = formatTime(lap.time);
-                  const isNewest = idx === 0;
                   return (
                     <div
                       key={lap.id}
-                      className={`flex justify-between items-center py-3 px-4 border-b border-opacity-10 border-gray-500 last:border-0 transition-all ${
-                        isNewest ? 'animate-fade-in' : ''
-                      }`}
-                      style={{
-                        animationDelay: `${idx * 0.05}s`,
-                        backgroundColor: isNewest ? theme.accentLight : 'transparent'
-                      }}
+                      className={`flex justify-between items-center py-3 px-4 border-b border-opacity-10 border-gray-500 last:border-0`}
                     >
-                      <div className="font-medium">Lap {lap.index} 🐇</div>
-                      <div className={`font-mono ${isNewest ? theme.primary : ''}`}>
+                      <div className="font-medium">Lap {lap.index}</div>
+                      <div className="">
                         {formattedLapTime.main}
                         <span className={theme.secondary}>{formattedLapTime.ms}</span>
                       </div>
