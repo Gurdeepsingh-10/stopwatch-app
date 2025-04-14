@@ -1,8 +1,8 @@
 // client/src/App.jsx
 import { useState } from 'react';
-import StopwatchApp from './StopwatchApp';
-import PomodoroApp from './PomodoroApp';
-import TimerApp from './TimerApp';
+import StopwatchApp from './StopwatchApp.jsx';
+import PomodoroApp from './PomodoroApp.jsx';
+import TimerApp from './TimerApp.jsx';
 import About from './About.jsx';
 import { useTheme } from './ThemeContext.jsx';
 import { Info } from 'lucide-react';
